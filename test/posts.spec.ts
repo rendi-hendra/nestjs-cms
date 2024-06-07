@@ -61,4 +61,40 @@ describe('UserController', () => {
       expect(response.body.data.content).toBe('test');
     });
   });
+
+  describe('GET /api/posts/:postsId', () => {
+    beforeEach(async () => {
+      await testService.deleteAll();
+
+      await testService.createUser();
+      await testService.createPosts();
+    });
+
+    it('should be rejected if posts is not found', async () => {
+      const posts = await testService.getPosts();
+      const response = await request(app.getHttpServer())
+        .get(`/api/posts/${posts.id + 1}`)
+        .set('Authorization', 'test');
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(404);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to create contact', async () => {
+      const posts = await testService.getPosts();
+      const response = await request(app.getHttpServer())
+        .get(`/api/posts/${posts.id}`)
+        .set('Authorization', 'test');
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.id).toBeDefined();
+      expect(response.body.data.title).toBe('test');
+      expect(response.body.data.content).toBe('test');
+      expect(response.body.data.author).toBe('test');
+    });
+  });
 });

@@ -1,6 +1,6 @@
 import { PrismaService } from '../src/common/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Post, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -42,6 +42,24 @@ export class TestService {
         name: 'test',
         password: await bcrypt.hash('test', 10),
         token: 'test',
+      },
+    });
+  }
+
+  async createPosts() {
+    await this.prismaService.post.create({
+      data: {
+        title: 'test',
+        content: 'test',
+        author: 'test',
+      },
+    });
+  }
+
+  async getPosts(): Promise<Post> {
+    return await this.prismaService.post.findFirst({
+      where: {
+        title: 'test',
       },
     });
   }
